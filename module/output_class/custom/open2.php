@@ -1,0 +1,599 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+  <script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+  
+   
+  <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+  <link rel="StyleSheet" href="../../../model/css/button.css" type="text/css" />
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="../../../model/ajax/ci_ajax.js"></script>
+  <script src="../../../model/ajax/ci_function.js"></script>
+  
+  <script>
+   
+    
+   $(function() {
+    $( "#item_for_search, #condition_for_search" ).sortable({
+      revert: true,
+      stop: function( event, ui ) {
+            //alert('aaa');
+           var x= document.getElementById('condition_for_search').cells;
+            x[0].firstChild.firstChild.firstChild.firstChild.firstChild.style.display='none';
+            for(var i=1;i<=x.length-1;i++){
+            
+            x[i].firstChild.firstChild.firstChild.firstChild.firstChild.style.display='block';
+            }
+      }
+    });
+   
+    $( "tr, td" ).disableSelection();
+    
+    $( document ).tooltip();
+    
+    
+    $( ".accordion" ).accordion({
+      collapsible: true,
+      heightStyle: "content",
+      active: 1
+    });
+
+    
+    
+  
+   
+  });
+ 
+
+  
+ 
+ 
+   
+//########################### ######################################################################################### 
+  function add_condition(row,check){
+  
+    d= new Date();
+    time=d.getTime();
+    display='';
+     var row=document.getElementById(row);
+         
+        
+        
+         if(check=='item'){
+         row_number=row.cells.length;
+         new_row=row.insertCell(row_number);
+         new_row.id='item['+row_number+']';
+         new_row.setAttribute('class',"ui-state-default");
+         new_row.innerHTML="<p align='right'>欄位篩選　<input type='button' value='X' onclick=del('item','item["+row_number+"]','')></p><select id='item_select["+row_number+"]' name='item_select["+row_number+"]' onchange=select_oper('item_select_option["+row_number+"]',this.value,"+row_number+",'item')><option value='all'>全部</option><option value='type'>文獻類型</option><option value='title'>文獻標題</option><option value='date'>文獻年代</option><option value='language'>文獻語言</option><option value='source'>期刊名稱<option value='author'>文獻作者</option></select><br><div id='item_select_option["+row_number+"]' ><input type='hidden' id='action_item_logic["+row_number+"]' name='action_item_logic["+row_number+"]' value='='><lable>　</label><br><input type='hidden' id='action_item["+row_number+"]' name='action_item["+row_number+"]' value='*'><label>　</label></div>";
+         }else if(check == 'condition'){
+         
+         row_number=row.cells.length;
+         row_number1= row.cells.length;
+         if(row_number==0){
+          display='none';
+         }
+         
+         new_row=row.insertCell(row_number); 
+         row_number=row_number+time;        
+         new_row.id='condition['+row_number+']';
+         new_row.setAttribute('class',"ui-state-default"); 
+         
+         if(display=='none'){
+         //<option value='not'>NOT</option>
+         new_row.innerHTML+="<table border=0 ><tr><td ><select style='display:none' name='bool_condition[]' onchange='sql_view()' ><option value='and'>AND</option><option value='or'>OR</option></select></td><td style='border-style: none' title='滑鼠左鍵按一下：增加一個左括號；滑鼠右鍵按一下：刪除所有左括號' onmouseover=change_sign_style(this,'open') onmouseout=change_sign_style(this,'close') onMouseDown=sign('left_sign["+row_number+"]','left');sql_view();><input type='hidden' id='left_sign["+row_number+"]' name='left_sign[]' value=''  ><label>　</label></td><td><p align='right'><input type='button' value='X'   onclick=del('condition','condition["+row_number+"]','');sql_view();groupby_check()></p><p>條件</p><select id='condition_select["+row_number+"]' name='condition_select[]'  onchange=select_oper('condition_select_option["+row_number+"]',this.value,"+row_number+",'condition');sql_view();groupby_check()><option value='type'>文獻類型</option><option value='title'>文獻標題</option><option value='date'>文獻日期</option><option value='language'>文獻語言</option><option value='source'>期刊名稱</option><option value='author'>文獻作者</option></select><br><div id='condition_select_option["+row_number+"]' ><input type='hidden' id='action_condition_logic["+row_number+"]' name='action_condition_logic[]' value='='><lable>為</label><br><select id='action_condition["+row_number+"]' name='action_condition[]' onchange=groupby_check();sql_view();><option value='book'>圖書</option><option value='journal'>期刊論文</option><option value='thesis'>學位論文</option><option value='conference'>會議論文</option><option value='web'>電子資源</option><option value='report'>報告</option><option value='tool'>工具書</option><option value='other'>其他</option></select></div></td><td style='' onmouseover=change_sign_style(this,'open') title='滑鼠左鍵按一下：增加一個右括號；滑鼠右鍵按一下：刪除所有右括號' onmouseout=change_sign_style(this,'close') onMouseDown=sign('right_sign["+row_number+"]','right');sql_view();><input type='hidden' id='right_sign["+row_number+"]' name='right_sign[]' value=''  ><label>　</label></td>";
+         }else{
+         //<option value='not'>NOT</option>
+         new_row.innerHTML+="<table border=0 ><tr><td ><select style='display:block' name='bool_condition[]' onchange='sql_view()'><option value='and'>AND</option><option value='or'>OR</option></select></td><td style='border-style: none' title='滑鼠左鍵按一下：增加一個左括號；滑鼠右鍵按一下：刪除所有左括號' onmouseover=change_sign_style(this,'open') onmouseout=change_sign_style(this,'close') onMouseDown=sign('left_sign["+row_number+"]','left');sql_view();><input type='hidden' id='left_sign["+row_number+"]' name='left_sign[]' value='' ><label>　</label></td><td><p align='right'><input type='button' value='X'   onclick=del('condition','condition["+row_number+"]','');sql_view();groupby_check()></p><p>條件</p><select id='condition_select["+row_number+"]' name='condition_select[]'  onchange=select_oper('condition_select_option["+row_number+"]',this.value,"+row_number+",'condition');sql_view();groupby_check()><option value='type'>文獻類型</option><option value='title'>文獻標題</option><option value='date'>文獻日期</option><option value='language'>文獻語言</option><option value='source'>期刊名稱</option><option value='author'>文獻作者</option></select><br><div id='condition_select_option["+row_number+"]' ><input type='hidden' id='action_condition_logic["+row_number+"]' name='action_condition_logic[]' value='='><lable>為</label><br><select id='action_condition["+row_number+"]' name='action_condition[]' onchange=groupby_check();sql_view();><option value='book'>圖書</option><option value='journal'>期刊論文</option><option value='thesis'>學位論文</option><option value='conference'>會議論文</option><option value='web'>電子資源</option><option value='report'>報告</option><option value='tool'>工具書</option><option value='other'>其他</option></select></div></td><td style='' onmouseover=change_sign_style(this,'open') title='滑鼠左鍵按一下：增加一個右括號；滑鼠右鍵按一下：刪除所有右括號' onmouseout=change_sign_style(this,'close') onMouseDown=sign('right_sign["+row_number+"]','right');sql_view();><input type='hidden' id='right_sign["+row_number+"]' name='right_sign[]' value=''  ><label>　</label></td>";
+         }
+         }
+         
+         
+  
+  }
+ 
+  
+  
+  function select_oper(object_obj,value,num,check){
+       var object= document.getElementById(object_obj);
+       if(check =='item'){
+       if(value=='type'){
+         object.innerHTML='<input type="hidden" id="action_item_logic['+num+']" name="action_item_logic['+num+']" value="=" ><label>為</label><br><select id="action_item['+num+']" name="action_item['+num+']" ><option value="book">圖書</option><option value="journal">期刊論文</option><option value="thesis">學位論文</option><option value="conference">會議論文</option><option value="web">電子資源</option><option value="report">報告</option><option value="tool">工具書</option><option value="other">其他</option></select>';
+      
+       }else if(value=='date'){
+       
+         object.innerHTML='<select id="action_item_logic['+num+']" name="action_item_logic['+num+']" ><option value="=">＝</option><option value=">">＞</option><option value=">=">＞＝</option><option value="<=">＝＜</option><option value="<">＜</option><option value="!=">＜＞</option></select><br><input type="number" id="action_item['+num+']" name="action_item['+num+']" max="9999" >';
+       
+       }else if(value=='language'){
+       
+       
+          object.innerHTML='<input type="hidden" id="action_item_logic['+num+']" name="action_item_logic['+num+']" value="=" ><label>為</label><br><select id="action_item['+num+']" name="action_item['+num+']" ><option value="english">英文</option><option value="nonenglish">中文</option></select>';
+       
+       }else if(value == 'author' || value =='source'){
+       
+         object.innerHTML='<input type="hidden" id="action_item_logic['+num+']" name="action_item_logic['+num+']" value="LIKE" ><label>為</label><br><input type="text" id="action_item['+num+']" name="action_item['+num+']" value="" >';
+      
+       }else if(value == 'all'){
+         object.innerHTML='<input type="hidden" id="action_item_logic['+num+']" name="action_item_logic['+num+']" value="=" ><label>　</label><br><input type="hidden" id="action_item['+num+']" name="action_item['+num+']" value="*" ><label>　</label>';
+       
+       }else{
+       
+         object.innerHTML='<select id="action_item_logic['+num+']" name="action_item_logic['+num+']" ><option value="=">絕對等於</option><option value="like">模糊等於</option></select><br><input type="text" id="action_item['+num+']" name="action_item['+num+']" value="" >';
+       }
+     }else if(check =='condition'){
+              
+        
+     
+          if(value=='type'){
+            object.innerHTML='<input type="hidden" id="action_condition_logic['+num+']" name="action_condition_logic[]" value="=" ><label>為</label><br><select id="action_condition['+num+']" name="action_condition[]" onchange=sql_view()><option value="book">圖書</option><option value="journal">期刊論文</option><option value="thesis">學位論文</option><option value="conference">會議論文</option><option value="web">電子資源</option><option value="report">報告</option><option value="tool">工具書</option><option value="other">其他</option></select>';
+      
+          }else if(value=='date'){
+       
+            object.innerHTML='<select id="action_condition_logic['+num+']" name="action_condition_logic[]" onchange=sql_view()><option value="=">＝</option><option value=">">＞</option><option value=">=">＞＝</option><option value="<=">＝＜</option><option value="<">＜</option><option value="!=">＜＞</option></select><br><input type="number" id="action_condition['+num+']" name="action_condition[]" max="9999" >';
+       
+          }else if(value=='language'){
+       
+       
+             object.innerHTML='<input type="hidden" id="action_condition_logic['+num+']" name="action_condition_logic[]" value="=" ><label>為</label><br><select id="action_condition['+num+']" name="action_condition[]" onchange=sql_view() ><option value="english">英文</option><option value="nonenglish">中文</option></select>';
+       
+         }else if(value == 'author' || value == 'source'){
+       
+            object.innerHTML='<input type="hidden" id="action_condition_logic['+num+']" name="action_condition_logic[]" value="LIKE" ><label>為</label><br><input type="text" id="action_condition['+num+']" name="action_condition[]" onchange=sql_view() value="" required="required">';
+       
+          }else if(value=='null'){
+       
+            object.innerHTML='<input type="hidden" id="action_condition_logic['+num+']" name="action_condition_logic[]" value="=" ><input type="hidden" id="action_condition['+num+']" name="action_condition[]" value="null" ><br><select disabled="disabled"><option>　　　　</option></select>';
+          }else{
+       
+            object.innerHTML='<select id="action_condition_logic['+num+']" name="action_condition_logic[]" onchange=sql_view() ><option value="=">絕對等於</option><option value="LIKE">模糊等於</option></select><br><input type="text" id="action_condition['+num+']" name="action_condition[]" value="" required="required" onchange=sql_view()>';
+          }
+        
+        }
+     
+       
+  }
+  
+  
+  function del(type,object,check){
+  
+    var object = document.getElementById(object);
+    
+    if(type == 'item'){
+        if(check =='first'){
+        
+           var select =document.getElementById('item_select[0]');
+         
+              select.selectedIndex=0;
+              
+              var div_0 = document.getElementById('item_select_option[0]');
+              div_0.innerHTML='';
+              div_0.innerHTML='<input type="hidden" id="action_item_logic[0]" name="action_item_logic[0]" value="="><label>為</label><br><select id="action_item[0]" name="action_item[0]"><option value="book">圖書</option><option value="journal">期刊論文</option><option value="thesis">學位論文</option><option value="conference">會議論文</option><option value="web">電子資源</option><option value="report">報告</option><option value="tool">工具書</option><option value="other">其他</option></select>';
+         }else{
+         
+           var parent = document.getElementById('item_for_search');
+           
+          parent.removeChild(object);
+         
+         
+         }
+        
+   }else if(type == 'condition'){
+       /* if(check =='first'){
+        
+           var select =document.getElementById('condition_select[0]');
+         
+              select.selectedIndex=0;
+              
+              var div_0 = document.getElementById('condition_select_option[0]');
+              div_0.innerHTML='';
+              div_0.innerHTML='<input type="hidden" id="action_condition_logic[0]" name="action_condition_logic[0]" value="="><input type="hidden" id="action_condition[0]" name="action_condition[0]"><p>&nbsp;</p>';
+         }else{  */
+         
+           var parent = document.getElementById('condition_for_search');
+           
+          parent.removeChild(object);
+          var x= document.getElementById('condition_for_search').cells;
+          x[0].firstChild.firstChild.firstChild.firstChild.firstChild.style.display='none';
+         
+      //   }
+   
+   
+   
+   }       
+  
+  }
+  
+  var num=1;
+  function change_target(){
+     
+     var url = document.getElementById('form');
+     url.target='form['+num+']';
+       
+    num=num+1;
+   } 
+  
+  function main_condition_check(){
+  
+  var main = document.getElementById('main_condition');
+  var sel = document.getElementById('condition_select[0]');
+  var opt = document.getElementById('condition_select_option[0]');
+ // alert(main.style.display);
+  
+  if(main.style.display=='none'){
+  
+    main.style.display='block';
+    sel.selectedIndex=0;
+    opt.innerHTML = '<input type="hidden" id="action_condition_logic[0]" name="action_condition_logic[0]" value="="><input type="hidden" id="action_condition[0]" name="action_condition[0]"><p>&nbsp;</p>';
+    
+  }else if(main.style.display=='block'){
+  
+    main.style.display='none';
+    sel.selectedIndex=0;
+    opt.innerHTML = '<input type="hidden" id="action_condition_logic[0]" name="action_condition_logic[0]" value="="><input type="hidden" id="action_condition[0]" name="action_condition[0]"><p>&nbsp;</p>';
+  }
+     
+  
+  
+  
+  }
+  
+  
+  function journal_range(index){
+  
+   var range = document.getElementsByName('journal_range'); 
+    for(var i =0 ;i<=range.length-1;i++){
+    
+    if(i == index ){
+    
+       range[i].style.display='block';
+    }else{
+    
+       range[i].style.display='none';
+    }
+    
+    
+    }
+  
+  }
+  
+    function groupby_check(){
+    var select_type='';
+    var select_title='';
+    var select_date='';
+    var select_language='';
+    var select_journal='';
+    var select_author='';
+    var select_2_journal='';
+    var inital='<input type="radio" name="groupby" value="" checked>計算總數 ｜ <input type="radio" name="groupby" value="type" >依照文獻類型排列<img title="選擇此排列將可產生圓餅圖表" src="./icon/piechart.jpg" height="15px" width="15px">｜ <input type="radio" name="groupby" value="title" >依照標題排列<img title="選擇此排列將可產生長條圖表" src="./icon/barchart.jpg" height="15px" width="15px"> ｜ <input type="radio" name="groupby" value="date" >依照年代排列<img title="選擇此排列將可產生長條圖表" src="./icon/barchart.jpg" height="15px" width="15px"> ｜ <input type="radio" name="groupby" value="language" >依照語言排列<img title="選擇此排列將可產生圓餅圖表" src="./icon/piechart.jpg" height="15px" width="15px">｜ <input type="radio" name="groupby" value="author" >依照作者名排列<img title="選擇此排列將可產生長條圖表" src="./icon/barchart.jpg" height="15px" width="15px">';
+    var select= document.getElementsByName('condition_select[]');
+    var select_2= document.getElementsByName('action_condition[]');
+    
+    for(var x =0; x<=select.length-1;x++){
+    
+        //if(select[x].value)
+      
+     /* if(select[x].value=='type'){
+        
+        if(select_type!='yes'){
+            select_type='yes';
+         inital+='｜ <input type="radio" name="groupby" value="type" >依照文獻類型排列*';
+        }
+            
+        
+        
+      }else if(select[x].value=='title'){
+      
+         if(select_title!='yes'){
+            select_title='yes';
+            inital+='｜ <input type="radio" name="groupby" value="title" >依照標題排列 ';
+        }
+        
+        //select_title=
+        
+      
+      }else if(select[x].value=='date'){
+      
+         if(select_date!='yes'){
+            select_date='yes';
+           inital+='｜ <input type="radio" name="groupby" value="date" >依照年代排列 ';
+        }
+         
+        //select_date=
+        
+      
+      }else if(select[x].value=='language'){
+        
+        if(select_language!='yes'){
+            select_language='yes';
+           inital+='｜ <input type="radio" name="groupby" value="language" >依照語言排列*';
+        }
+        //select_language=
+        
+      
+      }else*/ 
+      if(select[x].value=='source'){
+        
+        if(select_journal!='yes'){
+            select_journal='yes';
+            inital+='｜ <input type="radio" name="groupby" value="source" >依照期刊名排列<img title="選擇此排列將可產生長條圖表" src="./icon/barchart.jpg" height="15px" width="15px">';
+        }
+  
+        //select_journal=
+        
+      /*
+      }else if(select[x].value=='author'){
+        
+         if(select_author!='yes'){
+            select_author='yes';
+            inital+='｜ <input type="radio" name="groupby" value="author" >依照作者名排列';
+        }
+        //select_author=
+        
+      
+      } */
+      
+    
+    }
+    } 
+    for(var y=0;y<=select_2.length-1;y++){
+      if(select_2[y].value=='journal'){
+        
+        if(select_2_journal!='yes'){
+            select_2_journal='yes';
+            inital+='｜ <input type="radio" name="groupby" value="source" >依照期刊名排列<img title="選擇此排列將可產生長條圖表" src="./icon/barchart.jpg" height="15px" width="15px">';
+        }
+    
+    }
+    }
+    
+    document.getElementById('groupby_span').innerHTML=inital;
+    
+
+  }
+  
+  function sql_view(reback){
+  
+    var parent = document.getElementById('sql_view');
+    var content='';
+    var select= document.getElementsByName('condition_select[]');
+    var select_data = new Array();
+    var bool = document.getElementsByName('bool_condition[]');
+    var bool_data = new Array();
+    var action =document.getElementsByName('action_condition[]');
+    var action_data = new Array();
+    var logic = document.getElementsByName('action_condition_logic[]');
+    var logic_data = new Array(); 
+    var left_sign= document.getElementsByName('left_sign[]');
+    var left_sign_data = new Array();
+    var right_sign= document.getElementsByName('right_sign[]');
+    var right_sign_data = new Array();
+    var num = select.length;
+    
+    
+   
+    for(var i =0; i<= num-1;i++){
+    
+     select_data.push(select[i].value);
+     bool_data.push(bool[i].value);
+     action_data.push(action[i].value);
+     logic_data.push(logic[i].value);
+     left_sign_data.push(left_sign[i].value);
+     right_sign_data.push(right_sign[i].value);
+     
+  var select_json =  JSON.stringify(select_data);
+  var bool_json =  JSON.stringify(bool_data);
+  var action_json =  JSON.stringify(action_data);
+  var logic_json =  JSON.stringify(logic_data);
+  var left_sign_json = JSON.stringify(left_sign_data);
+  var right_sign_json = JSON.stringify(right_sign_data);
+  if(reback==null){
+    check('sql_view','./sql_view.php',{select:select_json,action: action_json, bool: bool_json, logic: logic_json, left_sign:left_sign_json,right_sign: right_sign_json});
+  }else{
+    var json ={select:select_json,action: action_json, bool: bool_json, logic: logic_json, left_sign:left_sign_json,right_sign: right_sign_json}; 
+    return json; 
+  }
+  
+  } 
+  }
+  
+ 
+  </script>
+</head>
+<body>
+
+
+<form id="form" action="open_result.php" method="get" target="form[0]" onsubmit="window.open('open_result.php',this.target,'resizable=1,scrollbars=1,width=950,height=800')">
+
+<table  style="border-style: solid" >
+<thead>
+<tr><th><h2>請設定以下查詢條件</h2></th></tr>
+</thead>
+<tbody>
+
+
+<tr>
+<td >
+<div id="sql_view" style="border-style: solid" onclick="sql_view()"><p>查詢條件敘述式預覽，點擊這邊更新預覽</p></div>
+<table border="0">
+<tbody>
+<tr><td><p>設定條件</p><a>拖動可改變順序</a></td></tr>
+<tr><td>
+
+<table style="float:left" oncontextmenu="return false" >
+<tr id="condition_for_search">
+
+</tr>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<input type="button" value="增加一個條件" onmouseout='groupby_check()' onclick="add_condition('condition_for_search','condition');sql_view()">
+</td>
+</tr>
+
+<tr>
+<td style="border-style: dotted none none"></td></tr>
+<tr>
+<td><div onmouseover=""><p>指定排列方式</p><span id="groupby_span"> </div></td>
+</tr>
+<tr>
+<td style="border-style: dotted none none">選定季刊查詢時間範圍<br>
+<?php
+require "../../../sysfunction/connect.php";
+require "../../../option/option.php";
+ 
+
+?>
+<input type="radio" name="journal_check" value="none" onclick="journal_range(0)" checked>全部<input type="radio" name="journal_check" value="volandiss" onclick="journal_range(1)">使用卷期選擇方式設定<input type="radio" name="journal_check" value="year" onclick="journal_range(2)">使用西元年代方式設定<br>
+<div name="journal_range" style="display: block">
+&nbsp;
+</div>
+<div name="journal_range" style="display: none">
+<?php
+$result = $pdo->query("SELECT  volume, group_concat(issue separator ';')  FROM `volumeissue` group by volume order by volume DESC");
+  $row=$result->fetchAll(PDO::FETCH_NUM);
+  echo "<select id='vol_1' name='vol_1'   onchange=check('vol_1_issue','select_search.php',{vol:this.value,no:1}) >";
+  echo '<option value="null" disabled="disabled" selected>　</option>';
+  foreach($row as $data){
+  
+  echo '<option value="'.$data[0].'">'.$data[0].'</option>';
+
+  }
+  echo '</select>卷';
+
+
+?>
+<span id="vol_1_issue"></span>期
+　至　
+<?php
+echo "<select id='vol_2' name='vol_2'  onchange=check('vol_2_issue','select_search.php',{vol:this.value,no:2}) >";
+  echo '<option value=null disabled="disabled" selected>　</option>';
+  foreach($row as $data){
+  
+  echo '<option value="'.$data[0].'">'.$data[0].'</option>';
+
+  }
+  echo '</select>卷';
+
+ ?>
+ <span id="vol_2_issue"></span>期
+</div>
+<div name="journal_range" style="display: none">
+<input type="number" name="year1" min="1" max="9999" size="5">年 至 <input type="number" name="year2" min="1" max="9999" size="5">年
+
+</div>
+
+</td>
+</tr>
+<tr>
+
+
+
+</tr>
+</tbody>
+</table>
+
+<table >
+<thead>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" style="border-style: none">
+<div class="accordion">
+<H3>客製化表格設定（選用）</H3>
+<div>
+<a>說明：本功能可指定表格欄位，並設定這些欄位的篩選方式以呈現想要的結果</a>
+<table>
+<tbody>
+
+<tr id="item_for_search" >
+
+</tr> 
+</tbody>
+</table>
+<input type="button" value="增加一個欄位" onclick="add_condition('item_for_search','item')">
+</div>
+</div>
+</td>
+</tr>
+
+</tbody>
+</table>
+<div id='json'></div>
+<input type="submit" name="submit" value="送出查詢" style="font-size: 26px; " onclick="change_target()">
+</form>
+
+
+</body>
+<script>
+
+
+
+function sign(id, forward){
+  
+  var tag = document.getElementById(id);
+ 
+  if(event.button==0 && forward=='left'){
+     tag.value+=' ( ';
+     tag.nextSibling.innerHTML+='<a style="font-size: 100px; ">(</a>';
+  
+  
+  }else if(event.button==2 && forward=='left'){
+     tag.value='';
+     tag.nextSibling.innerHTML='　';
+  
+  }else if(event.button==0 && forward=='right'){
+     tag.value+=' ) ';
+     tag.nextSibling.innerHTML+='<a style="font-size: 100px; ">)</a>';
+  
+  
+  }else if(event.button==2 && forward=='right'){
+     tag.value='';
+     tag.nextSibling.innerHTML='　';
+  
+  }
+  
+    
+  
+  } 
+  
+function change_sign_style(id, type){
+
+if(type=='open'){
+  id.setAttribute('style','border-style:dotted');
+  //alert(id.style.value);
+}else if(type=='close'){
+  id.setAttribute('style','');
+ // id.style.border-style='none';
+
+}
+
+
+
+
+
+}
+
+function json(){
+
+var x = document.getElementById('json');
+x.innerHTML='<input type="hidden" name="josn_transfer" value="'+sql_view('reback')+'">';
+
+alert(x.firstChild.value);
+
+
+
+
+
+} 
+</script> 
+</html>
+
+
+      
